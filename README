@@ -1,0 +1,27 @@
+SWEBS - stands for Swimple Web Server
+
+Written completly(for now) in C++
+
+Main goal is to create a fully portable and simple in use webserver(sorry for my english is not native)
+
+V 0.1
+just runs an index.html from ./www
+
+V 0.1.a
+
+You can specify port, root dir and path to fpm socket file
+
+for example:
+./simple_server --port 8080 --directory ./www --socket /run/php/php7.4-fpm.sock
+
+
+V 0.1.b
+
+You can use swebs as a proxy for other web service and you can use https
+
+for example
+./simple_server --port 8080 --directory ./www --socket /run/php/php7.4-fpm.sock --proxy-port 80 --proxy-host example.com --proxy-protocol-v1 --ssl-cert /path/to/your/certificate.pem --ssl-port 8443
+
+
+V 0.1.c
+simple_server is now multithreaded

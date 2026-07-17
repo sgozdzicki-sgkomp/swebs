@@ -1,27 +1,36 @@
-SWEBS - stands for Swimple Web Server
+readme_content = """# SWEBS — Simple Web Server
 
-Written completly(for now) in C++
+**SWEBS** (Simple Web Server) is a lightweight, high-performance, multi-threaded HTTP/1.1 web server implemented from scratch in C++. It is designed to cleanly serve static files, reverse-proxy traffic to an upstream server, and natively communicate with **PHP-FPM via the binary FastCGI protocol** over Unix domain sockets—all without requiring an intermediary like Nginx or Apache.
 
-Main goal is to create a fully portable and simple in use webserver(sorry for my english is not native)
+---
 
-V 0.1
-just runs an index.html from ./www
+## Features
 
-V 0.1.a
+- 🚀 **Multi-Threaded Architecture**: Handles incoming client connections concurrently using standard detached threads (`std::thread`), ensuring fast and non-blocking response delivery.
+- 🐘 **Native PHP-FPM FastCGI Integration**: Implements the official binary FastCGI protocol (`FCGI_BEGIN_REQUEST`, `FCGI_PARAMS`, `FCGI_STDOUT`, etc.) internally to speak directly with PHP-FPM Unix sockets. It also cleanly handles custom PHP HTTP status overrides (`Status: XXX`).
+- 📂 **Static File Serving**: Serves HTML documents and other assets from a configurable root directory. Automatically resolves directory roots (`/`) to `index.html`.
+- 🔀 **Reverse Proxy Mode**: Forwards raw TCP client payloads to a specified backend proxy host and port.
+- 🏷️ **Proxy Protocol Support**: Supports prepending the **Proxy Protocol v1** text header (`PROXY TCP4 ...`) to maintain upstream client mapping during reverse proxying.
+- 🛡️ **Directory Traversal Mitigation**: Basic security layer that scans URIs for malicious path sequences (`..`), throwing an immediate `400 Bad Request` to prevent sensitive file leakage.
+- 🔄 **Graceful Restarts**: Employs the `SO_REUSEADDR` socket option to eliminate the dreaded "Address already in use" binding lag during quick restarts.
 
-You can specify port, root dir and path to fpm socket file
+---
 
-for example:
-./simple_server --port 8080 --directory ./www --socket /run/php/php7.4-fpm.sock
+## Prerequisites
 
+- **Operating System**: Linux / Unix-like environment (uses POSIX networking API like `sys/socket.h`, `sys/un.h`).
+- **Compiler**: A C++11 compliant compiler or newer (e.g., `g++` or `clang++`).
+- **PHP-FPM** *(Optional)*: Required only if you intend to execute PHP scripts dynamically (e.g., `php7.4-fpm` or higher).
 
-V 0.1.b
+---
 
-You can use swebs as a proxy for other web service and you can use https
+## Compilation
 
-for example
-./simple_server --port 8080 --directory ./www --socket /run/php/php7.4-fpm.sock --proxy-port 80 --proxy-host example.com --proxy-protocol-v1 --ssl-cert /path/to/your/certificate.pem --ssl-port 8443
+Compile the codebase using any standard C++ compiler. Ensure you pass the `-pthread` flag to enable multi-threading support.
 
+```bash
+# Using g++
+g++ -std=c++11 -pthread main.cpp -o swebs
 
-V 0.1.c
-simple_server is now multithreaded
+# Using clang++
+clang++ -std=c++11 -pthread main.cpp -o swebs
